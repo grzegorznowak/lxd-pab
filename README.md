@@ -11,7 +11,7 @@ In the final form this project will allow you to interact with your Plutus as ea
 PAB_COMMIT=41149926c108c71831cfe8d244c83b0ee4bf5c8a molecule converge -s lxd-pab   
 
 lxc exec pab -- sudo --login --user nix         # start interacting with the container as the nix user
-cd pab                                          # enter the pab repo
+cd pab                                          # enter the PAB repo
 nix-shell                                       # bootstrap the nix-shell
 cd ~/code/plutus-pioneer-program/code/week01/   # 3rd cohort week 1 codes
 cabal update                                    # update cabal
