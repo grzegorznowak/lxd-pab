@@ -1,5 +1,22 @@
 # LXD Plutus Application Backend's Provisioning
 
+## Teaser
+
+In the final form this project will allow you to interact with your Plutus as easily as:
+
+```
+# 3rd Pioneer's cohort week 1 code given as an example
+
+# build PAB against the lesson's commit:
+PAB_COMMIT=41149926c108c71831cfe8d244c83b0ee4bf5c8a molecule converge -s lxd-pab   
+
+lxc exec pab -- sudo --login --user nix         # start interacting with the container as the nix user
+cd pab                                          # enter the pab repo
+nix-shell                                       # bootstrap the nix-shell
+cd ~/code/plutus-pioneer-program/code/week01/   # 3rd cohort week 1 codes
+cabal update                                    # update cabal
+cabal build                                     # build
+```
 
 
 ## Requirements
@@ -106,6 +123,7 @@ lxc exec pab -- sudo --login --user nix         # start interacting with the con
 cd pab                                          # enter the pab repo
 nix-shell                                       # bootstrap the nix-shell
 cd ~/code/plutus-pioneer-program/code/week01/   # 3rd cohort week 1 codes
+cabal update                                    # update cabal
 cabal build                                     # build
 ```
 
