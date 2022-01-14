@@ -21,10 +21,28 @@ Other converge dependencies will be installed with the run of the `converge.sh` 
 
 (will ask for sudo to install apt packets)
 
+#### First time converge
+
+This will get dependencies lke `virtualenv` and `python` installed, bootstrapped and `molecule converge` ran
 ```
 ./converge.sh
 ```
 
+#### Subsequent converges (or commit targeted builds)
+At this point you should have the virtualenv and dependencies installed
+so just bootstrap to it and roll with molecule directly
+
+```
+source provisioningenv/bin/activate
+
+# converge against the default PAB commit
+molecule converge -s lxd-pab  
+
+# == OR == 
+# converge against the specific commit 
+# 3rd Pioneer's cohort week 1 commit given as an example:
+PAB_COMMIT=41149926c108c71831cfe8d244c83b0ee4bf5c8a molecule converge -s lxd-pab
+```
 ### Re-Converge
 
 It's usually easy enough to just destroy the container and converge it a new if something craps out.

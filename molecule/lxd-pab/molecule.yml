@@ -33,6 +33,7 @@ provisioner:
 
   lint:
     name: ansible-lint
+
 scenario:
   name: lxd-pab
   destroy_sequence:

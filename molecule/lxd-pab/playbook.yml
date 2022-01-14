@@ -8,6 +8,9 @@
     pab_sources: "/home/{{ nix_user }}/pab"
     nix_source_file: "/home/nix/.nix-profile/etc/profile.d/nix.sh"
 
+    # which tag to git checkout to when converging the PAB
+    default_pab_commit: 7f53f18dfc788bf6aa929f47d840efa1247e11fd
+
   pre_tasks:
     - name: "Add the {{ nix_user }} user"
       ansible.builtin.user:
@@ -46,7 +49,7 @@
       git:
         repo: https://github.com/input-output-hk/plutus-apps
         dest: "{{ pab_sources }}"
-        version: 7f53f18dfc788bf6aa929f47d840efa1247e11fd
+        version: "{{ lookup('env', 'PAB_COMMIT') | default(default_pab_commit, true) }}"
         force: true
       become: true
       become_user: "{{ nix_user }}"
@@ -74,7 +77,7 @@
         executable: /bin/bash
         chdir: "{{ pab_sources }}"
 
-    - name: Build the Playgound
+    - name: Build the Playground
       shell: >-
         source {{ nix_source_file }} 
         && nix-build -A plutus-playground.server
@@ -84,7 +87,7 @@
         executable: /bin/bash
         chdir: "{{ pab_sources }}"
 
-    - name: Bootstrap the Playground's nix shell
+    - name: Bootstrap the nix-shell
       shell: >-
         source {{ nix_source_file }} 
         && nix-shell
