@@ -72,10 +72,12 @@ More of the actual use cases will follow
 * Start the server
 `./playgound-server.sh`
 
+* Let the server script complete
+
 * In a separate terminal start the client
 `./playgound-client.sh `
 
-* get the ip of the container running the playground:
+* Get the ip of the container running the playground:
 ```
 PAB_IP=$(lxc list | grep pab | awk '{print $6}')
 ```
