@@ -38,7 +38,7 @@ molecule destroy -s lxd-pab
 
 # Usage
 
-lookup the created container with 
+## lookup the created container 
 ```
 lxc list
 ```
@@ -47,6 +47,25 @@ it should be named `pab` on that list
 
 At this point you have the PAB toolset installed inside the LXD container 
 as the `nix` user. 
+
+## Log onto the container as the nix user
+
+```
+lxc exec pab -- sudo --login --user nix
+```
+
+`PAB` sources from IOHK are checked out into ~/pab
+
+## Accessing PAB while coding
+
+```
+====
+=========
+This section is a work in progress as I go through the Plutus Pioneer's course.
+More of the actual use cases will follow
+=========
+====
+```
 
 ## Playground
 
