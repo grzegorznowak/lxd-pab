@@ -29,7 +29,7 @@
           protocol: simplestreams
           alias: "{{ item.image }}"
         config:
-           raw.idmap: "uid {{ user_id.stdout }} 0\ngid {{ user_group_id.stdout }} 0"
+           raw.idmap: "uid {{ user_id.stdout }} 1001\ngid {{ user_group_id.stdout }} 1001"
            security.nesting: "{{ item.nested }}"
            security.privileged: "{{ item.privileged }}"
         profiles: ["default"]
