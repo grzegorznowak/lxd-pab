@@ -2,7 +2,7 @@
 
 ## Teaser
 
-In the final form this project will allow you to interact with your Plutus as easily as:
+This project allows you to interact with your Plutus as easily as:
 
 ```
 # 3rd Pioneer's cohort week 1 code given as an example
@@ -17,7 +17,6 @@ cd ~/code/plutus-pioneer-program/code/week01/   # 3rd cohort week 1 codes
 cabal update                                    # update cabal
 cabal build                                     # build
 ```
-
 
 ## Requirements
 
