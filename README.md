@@ -98,9 +98,9 @@ lxc exec pab -- sudo --login --user nix
 lxc config device add pab workspace disk source=[your workspace's path] path=/home/nix/code
 ```
 
-You can map either a containing folder with all your (Plutus) project, or just a specific project.
+You can map either a containing folder with all your (Plutus) projects, or just a specific project.
 I suggest the former as it will make the whole setup so much more dynamic.
-Then access it as nix user from that path given in the command itself: `/home/nix/code`
+Then access it as `nix` user from that path given in the command itself: `/home/nix/code`
 
 
 # Suggested Dev flow
