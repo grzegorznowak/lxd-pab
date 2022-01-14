@@ -1,0 +1,45 @@
+---
+dependency:
+  name: galaxy
+  options:
+    force: true
+driver:
+  name: lxd
+lint:
+  name: yamllint
+platforms:
+  - name: pab
+    nested: "true"  # allows nix to function
+    privileged: "false"
+    image: "ubuntu/focal/amd64"
+    groups:
+      - all
+
+provisioner:
+  name: ansible
+
+  config_options:
+    defaults:
+      internal_poll_interval: 0.001
+      forks: 50
+      display_ok_hosts: no
+      display_skipped_hosts: no
+      stdout_callback: yaml
+      bin_ansible_callbacks: True
+      callback_whitelist: profile_tasks
+      strategy: free
+    ssh_connection:
+      pipelining: True
+
+  lint:
+    name: ansible-lint
+scenario:
+  name: lxd-pab
+  destroy_sequence:
+    - cleanup
+    - destroy
+verifier:
+  directory: ../../tests
+  name: goss
+  lint:
+    name: yamllint

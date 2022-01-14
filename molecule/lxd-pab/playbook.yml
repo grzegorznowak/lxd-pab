@@ -1,0 +1,98 @@
+---
+
+### CORE PROVISIONING ###
+- name: Converge common for all
+  hosts: all
+  vars:
+    nix_user: nix
+    pab_sources: "/home/{{ nix_user }}/pab"
+    nix_source_file: "/home/nix/.nix-profile/etc/profile.d/nix.sh"
+
+  pre_tasks:
+    - name: "Add the {{ nix_user }} user"
+      ansible.builtin.user:
+        name: "{{ nix_user }}"
+        comment: "{{ nix_user }}"
+        shell: /bin/bash
+        home: "/home/{{ nix_user }}"
+
+  post_tasks:
+    - name: Update bashrc for the nix user
+      lineinfile:
+        dest: "/home/{{ nix_user }}/.bashrc"
+        line: "source {{ nix_source_file }}"
+        regexp: "^source /home/nix/"
+        owner: "{{ nix_user }}"
+        state: present
+        insertafter: EOF
+        create: true
+
+    - name: Change the ownership of the /nix folder for the nix user
+      file:
+        path: /nix
+        owner: "{{ nix_user }}"
+        mode: '0744'
+
+    - name: Add IOHK binary caches
+      blockinfile:
+        path: /etc/nix/nix.conf
+        create: true
+        block: |-
+          experimental-features = nix-command
+          substituters        = https://hydra.iohk.io https://iohk.cachix.org https://cache.nixos.org/
+          trusted-public-keys = hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= iohk.cachix.org-1:DpRUyj7h7V830dp/i6Nti+NEO2/nhblbov/8MW7Rqoo= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+
+    - name: Chackout the PAB repo
+      git:
+        repo: https://github.com/input-output-hk/plutus-apps
+        dest: "{{ pab_sources }}"
+        version: 7f53f18dfc788bf6aa929f47d840efa1247e11fd
+        force: true
+      become: true
+      become_user: "{{ nix_user }}"
+
+    - name: Make plutus playground not be using SSL
+      replace:
+        path: "{{ pab_sources }}/plutus-playground-client/webpack.config.js"
+        regexp: "https: true"
+        replace: "https: false"
+
+    - name: Make plutus playground listen on the public interface
+      lineinfile:
+        path: "{{ pab_sources }}/plutus-playground-client/webpack.config.js"
+        regexp: 'host: "0\.0\.0\.0",'
+        insertafter: 'port: 8009,'
+        line: 'host: "0.0.0.0",'
+
+    - name: Build the PAB library
+      shell: >-
+        source {{ nix_source_file }} 
+        && nix build -f default.nix plutus-apps.haskell.packages.plutus-pab.components.library
+      become: true
+      become_user: "{{ nix_user }}"
+      args:
+        executable: /bin/bash
+        chdir: "{{ pab_sources }}"
+
+    - name: Build the Playgound
+      shell: >-
+        source {{ nix_source_file }} 
+        && nix-build -A plutus-playground.server
+      become: true
+      become_user: "{{ nix_user }}"
+      args:
+        executable: /bin/bash
+        chdir: "{{ pab_sources }}"
+
+    - name: Bootstrap the Playground's nix shell
+      shell: >-
+        source {{ nix_source_file }} 
+        && nix-shell
+      become: true
+      become_user: "{{ nix_user }}"
+      args:
+        executable: /bin/bash
+        chdir: "{{ pab_sources }}"
+
+  roles:
+    - ableton.nix

@@ -1,0 +1,26 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+
+    - name: Update all packages to the latest version
+      apt:
+        upgrade: dist
+        update_cache: yes
+
+    # no facts given here, need to bodge this with some creative test-ing
+    - name: Install python for Ansible (Debian)
+      raw: apt -y update && apt install -y python-minimal
+      ignore_errors: true
+      # changed_when: true
+
+    - name: Install some useful apts
+      apt:
+        pkg:
+          - git-core
+          - curl
+          - net-tools
+        state: present
+        install_recommends: true
+        update-cache: true

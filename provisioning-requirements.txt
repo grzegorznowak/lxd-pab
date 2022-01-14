@@ -1,0 +1,5 @@
+ansible<3.0.0
+sh==1.12.14
+testinfra==3.0.6
+molecule<3.0.0
+python-vagrant==0.5.15

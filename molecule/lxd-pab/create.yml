@@ -1,0 +1,65 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: false
+
+  tasks:
+
+    - name: Save user ID
+      command: "id -u"
+      register: user_id
+    - name: Save user Group ID
+      command: "id -g"
+      register: user_group_id
+    - name: Create instance
+      lxd_container:
+        name: "{{ item.name }}"
+        state: started
+        devices:
+          root:
+            path: "/"
+            type: "disk"
+            pool: "{{ lookup('env', 'LXD_POOL') | default('default', true) }}"
+        source:
+          type: image
+          mode: pull
+          server: https://images.linuxcontainers.org/
+          protocol: simplestreams
+          alias: "{{ item.image }}"
+        config:
+           raw.idmap: "uid {{ user_id.stdout }} 0\ngid {{ user_group_id.stdout }} 0"
+           security.nesting: "{{ item.nested }}"
+           security.privileged: "{{ item.privileged }}"
+        profiles: ["default"]
+        wait_for_ipv4_addresses: true
+        timeout: 6000
+      with_items: "{{ molecule_yml.platforms }}"
+
+    - name: Collect existing ips
+      shell: >
+        lxc list | grep " {{ item.name }} " | awk '!/IPV4/{ if ( $6 != "" ) print $6}'
+      register: lxd_addresses
+      with_items: "{{ molecule_yml.platforms }}"
+
+    - debug:
+        var: lxd_addresses.results
+      changed_when: true
+
+    - name: Create static addresing
+      shell: >
+        lxc stop {{ item.name }} &&
+        lxc network attach lxdbr0 {{ item.name }} eth0 eth0 &&
+        lxc config device set {{ item.name }} eth0 ipv4.address {{ lxd_addresses.results[loop_idx].stdout }} &&
+        lxc start {{ item.name }}
+      loop: "{{ molecule_yml.platforms }}"
+      loop_control:
+        index_var: loop_idx
+
+    - lxd_container:
+        name: "{{ item.name }}"
+        state: started
+        wait_for_ipv4_addresses: true
+        timeout: 6000
+      with_items: "{{ molecule_yml.platforms }}"

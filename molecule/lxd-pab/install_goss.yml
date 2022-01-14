@@ -1,0 +1,62 @@
+---
+- name: Download and install Goss
+  get_url:
+    url: "https://github.com/aelsabbahy/goss/releases/download/{{ goss_version }}/goss-linux-{{ goss_arch }}"
+    dest: "{{ goss_bin }}"
+    sha256sum: "{{ goss_sha256sum }}"
+    mode: 0755
+
+- name: Remove any prior tests
+  file:
+    path: "{{ goss_test_directory }}"
+    state: absent
+
+- name: Create Molecule directory for test files
+  file:
+    path: "{{ goss_test_directory }}"
+    state: directory
+
+- name: Find Goss tests on localhost
+  find:
+    paths: "{{ lookup('env', 'MOLECULE_VERIFIER_TEST_DIRECTORY') }}"
+    patterns:
+      - "test[-.\\w]*.yml"
+      - "test_host_{{ ansible_hostname }}[-.\\w]*.yml"
+    excludes:
+      - "test_host_(?!{{ ansible_hostname }})[-.\\w]*.yml"
+    use_regex: true
+  delegate_to: localhost
+  register: test_files
+  changed_when: false
+  become: false
+
+- name: Find Goss tests on localhost (for groups)
+  find:
+    paths: "{{ lookup('env', 'MOLECULE_VERIFIER_TEST_DIRECTORY') }}"
+    patterns:
+      - "test_group_{{ item }}.yml"
+    excludes:
+      - "test_group_(?!{{ item }}).yml"
+    use_regex: true
+  delegate_to: localhost
+  register: test_group_files
+  changed_when: false
+  become: false
+  with_items: "{{ group_names }}"
+
+- name: debug
+  debug:
+    msg: "{{ test_files }}"
+    verbosity: 3
+
+- name: debug
+  debug:
+    msg: "{{ test_group_files }}"
+    verbosity: 3
+
+- name: Copy Goss tests to remote
+  copy:
+    src: "{{ item.path }}"
+    dest: "{{ goss_test_directory }}/{{ item.path | basename }}"
+  with_items:
+    - "{{ test_files.files }}"
