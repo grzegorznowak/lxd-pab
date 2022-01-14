@@ -31,7 +31,7 @@ It's usually easy enough to just destroy the container and converge it a new if 
 The first part destroys the container, then just runs the converge script all over again.
 
 ```
-source provirioningenv/bin/activate
+source provisioningenv/bin/activate
 molecule destroy -s lxd-pab
 ./converge.sh
 ```
