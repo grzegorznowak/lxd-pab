@@ -137,7 +137,9 @@ This section is a work in progress as I go through the Plutus Pioneer's course.
 
 # Playground
 
-* If not done yet, PAB has to be converged with `./converge.sh'
+* If not done yet, PAB has to be converged with either:
+  * the default PAB_COMMIT with: `./converge.sh`
+  * the specific PAB_COMMIT with: `PAB_COMMIT=41149926c108c71831cfe8d244c83b0ee4bf5c8a molecule converge -s lxd-pab`
 
 * Start the server
 `./playgound-server.sh`
