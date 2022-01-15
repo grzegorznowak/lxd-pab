@@ -69,7 +69,7 @@ The first part destroys the container, then just runs the converge script all ov
 ```
 source provisioningenv/bin/activate
 molecule destroy -s lxd-pab
-./converge.sh
+molecule converge -s lxd-pab
 ```
 
 # Usage
