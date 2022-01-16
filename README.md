@@ -63,8 +63,8 @@ PAB_COMMIT=41149926c108c71831cfe8d244c83b0ee4bf5c8a molecule converge -s lxd-pab
 ```
 ### Re-Converge
 
-It's usually easy enough to just destroy the container and converge it a new if something craps out.
-The first part destroys the container, then just runs the converge script all over again.
+It's usually easy enough to destroy the container and converge it a new if something craps out.
+The first part destroys the container, then runs the converge script all over again.
 
 ```
 source provisioningenv/bin/activate
@@ -98,7 +98,7 @@ lxc exec pab -- sudo --login --user nix
 lxc config device add pab workspace disk source=[your workspace's path] path=/home/nix/code
 ```
 
-You can map either a containing folder with all your (Plutus) projects, or just a specific project.
+You can map either a containing folder with all your (Plutus) projects, or a specific project.
 I suggest the former as it will make the whole setup so much more dynamic.
 Then access it as `nix` user from that path given in the command itself: `/home/nix/code`
 
