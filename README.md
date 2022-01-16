@@ -41,7 +41,7 @@ Other converge dependencies will be installed with the run of the `converge.sh` 
 
 #### First time converge
 
-This will get dependencies lke `virtualenv` and `python` installed, bootstrapped and `molecule converge` ran
+This will get dependencies like `virtualenv` and `python` installed, bootstrapped and `molecule converge` ran
 ```
 ./converge.sh
 ```
