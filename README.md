@@ -1,28 +1,33 @@
 # LXD Plutus Application Backend's Provisioning
 
-## Teaser
+## QuickStart
 
 This project allows you to interact with Plutus as easily as:
 
 ```
 # 3rd Pioneer's cohort week 2 code given as an example
 
+git clone git@github.com:grzegorznowak/lxd-pab.git lxd-pab
+cd lxc-pab
+
 # build PAB against the lesson's commit:
 PAB_COMMIT=6aff97d596ac9d59460aab5c65627b1c8c0a1528 ./converge.sh
 
-# map the dev workspace onto the container (a default you might need to tweak):
+# map the parent folder onto the container (a default you might need to tweak):
 lxc config device add pab workspace disk source=$(pwd)/../ path=/home/nix/code
   
 lxc exec pab -- sudo --login --user nix         # start interacting with the container as the nix user
 cd ~/pab                                        # enter the PAB repo
 nix-shell                                       # bootstrap the nix-shell
-cd ~/code/plutus-pioneer-program/code/week01/   # 3rd cohort week 1 codes
+cd ~/code/plutus-pioneer-program/code/week02/   # 3rd cohort week 1 codes
 cabal update                                    # update cabal
 cabal build                                     # build
 cabal repl
 ```
 
 ## Requirements
+
+Should work on any system that supports LXC/LXD containers
 
 ### LXD
 
