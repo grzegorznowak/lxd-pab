@@ -5,11 +5,14 @@
 This project allows you to interact with Plutus as easily as:
 
 ```
-# 3rd Pioneer's cohort week 1 code given as an example
+# 3rd Pioneer's cohort week 2 code given as an example
 
 # build PAB against the lesson's commit:
-PAB_COMMIT=41149926c108c71831cfe8d244c83b0ee4bf5c8a ./converge.sh
+PAB_COMMIT=6aff97d596ac9d59460aab5c65627b1c8c0a1528 ./converge.sh
 
+# map the dev workspace onto the container (a default you might need to tweak):
+lxc config device add pab workspace disk source=$(pwd)/../ path=/home/nix/code
+  
 lxc exec pab -- sudo --login --user nix         # start interacting with the container as the nix user
 cd ~/pab                                        # enter the PAB repo
 nix-shell                                       # bootstrap the nix-shell
