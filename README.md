@@ -19,6 +19,7 @@ nix-shell                                       # bootstrap the nix-shell
 cd ~/code/plutus-pioneer-program/code/week01/   # 3rd cohort week 1 codes
 cabal update                                    # update cabal
 cabal build                                     # build
+cabal repl
 ```
 
 ## Requirements
