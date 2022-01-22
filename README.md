@@ -2,16 +2,16 @@
 
 ## Teaser
 
-This project allows you to interact with your Plutus as easily as:
+This project allows you to interact with Plutus as easily as:
 
 ```
 # 3rd Pioneer's cohort week 1 code given as an example
 
 # build PAB against the lesson's commit:
-PAB_COMMIT=41149926c108c71831cfe8d244c83b0ee4bf5c8a molecule converge -s lxd-pab   
+PAB_COMMIT=41149926c108c71831cfe8d244c83b0ee4bf5c8a ./converge.sh
 
 lxc exec pab -- sudo --login --user nix         # start interacting with the container as the nix user
-cd pab                                          # enter the PAB repo
+cd ~/pab                                        # enter the PAB repo
 nix-shell                                       # bootstrap the nix-shell
 cd ~/code/plutus-pioneer-program/code/week01/   # 3rd cohort week 1 codes
 cabal update                                    # update cabal
@@ -152,13 +152,14 @@ This section is a work in progress as I go through the Plutus Pioneer's course.
 ```
 PAB_IP=$(lxc list | grep pab | awk '{print $6}')
 ```
-now the playground will be available from your browser under `${PAB_IP}:8009` 
+* the playground will be available from your browser under `http://${PAB_IP}:8009` 
 
+# Haddock Documentation
 
 ```
-====
-=========
-This section is a work in progress as I go through the Plutus Pioneer's course.
-=========
-====
+# Get the public ip of the container
+lxc list | grep pab | awk '{print $6}'  # show the PAB container's IP
+./build-and-serve-docs.sh               # Start the haddock server
 ```
+
+documentation will be available from your browser under `http://[PAB_IP]:8002/haddock`
