@@ -8,7 +8,7 @@ This project allows you to interact with Plutus as easily as:
 # 3rd Pioneer's cohort week 2 code given as an example
 
 git clone git@github.com:grzegorznowak/lxd-pab.git lxd-pab
-cd lxc-pab
+cd lxd-pab
 
 # build PAB against the lesson's commit:
 PAB_COMMIT=6aff97d596ac9d59460aab5c65627b1c8c0a1528 ./converge.sh
