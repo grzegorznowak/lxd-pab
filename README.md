@@ -5,13 +5,13 @@
 This project allows you to interact with Plutus as easily as:
 
 ```
-# 3rd Pioneer's cohort week 2 code given as an example
+# 3rd Pioneer's cohort week 3 code given as an example
 
 git clone git@github.com:grzegorznowak/lxd-pab.git lxd-pab
 cd lxd-pab
 
 # build PAB against the lesson's commit:
-PAB_COMMIT=6aff97d596ac9d59460aab5c65627b1c8c0a1528 ./converge.sh
+PAB_COMMIT=4edc082309c882736e9dec0132a3c936fe63b4ea ./converge.sh
 
 # map the parent folder onto the container (a default you might need to tweak):
 lxc config device add pab workspace disk source=$(pwd)/../ path=/home/nix/code
@@ -19,7 +19,7 @@ lxc config device add pab workspace disk source=$(pwd)/../ path=/home/nix/code
 lxc exec pab -- sudo --login --user nix         # start interacting with the container as the nix user
 cd ~/pab                                        # enter the PAB repo
 nix-shell                                       # bootstrap the nix-shell
-cd ~/code/plutus-pioneer-program/code/week02/   # 3rd cohort week 1 codes
+cd ~/code/plutus-pioneer-program/code/week03/   # go to the lesson
 cabal update                                    # update cabal
 cabal build                                     # build
 cabal repl                                      # bootstrap into REPL
@@ -67,8 +67,8 @@ molecule converge -s lxd-pab
 
 # == OR == 
 # converge against the specific commit 
-# 3rd Pioneer's cohort week 1 commit given as an example:
-PAB_COMMIT=41149926c108c71831cfe8d244c83b0ee4bf5c8a molecule converge -s lxd-pab
+# 3rd Pioneer's cohort week 3 commit given as an example:
+PAB_COMMIT=4edc082309c882736e9dec0132a3c936fe63b4ea molecule converge -s lxd-pab
 ```
 ### Re-Converge
 
@@ -147,7 +147,7 @@ This section is a work in progress as I go through the Plutus Pioneer's course.
 
 * If not done yet, PAB has to be converged with either:
   * the default PAB_COMMIT with: `./converge.sh`
-  * the specific PAB_COMMIT with: `PAB_COMMIT=41149926c108c71831cfe8d244c83b0ee4bf5c8a molecule converge -s lxd-pab`
+  * the specific PAB_COMMIT with: `PAB_COMMIT=4edc082309c882736e9dec0132a3c936fe63b4ea molecule converge -s lxd-pab`
 
 * Start the server
 `./playgound-server.sh`
