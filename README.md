@@ -2,11 +2,12 @@
 
 ## QuickStart
 
-This project allows you to interact with Plutus as easily as:
+Build source material from Plutus Pioneer Program as easily as:
 
 ```
 # 3rd Pioneer's cohort week 3 code given as an example
 
+git clone https://github.com/input-output-hk/plutus-pioneer-program.git 
 git clone git@github.com:grzegorznowak/lxd-pab.git lxd-pab
 cd lxd-pab
 
@@ -19,7 +20,7 @@ lxc config device add pab workspace disk source=$(pwd)/../ path=/home/nix/code
 lxc exec pab -- sudo --login --user nix         # start interacting with the container as the nix user
 cd ~/pab                                        # enter the PAB repo
 nix-shell                                       # bootstrap the nix-shell
-cd ~/code/plutus-pioneer-program/code/week03/   # go to the >
+cd ~/code/plutus-pioneer-program/code/week03/   # go to the sources
 cabal update                                    # update cabal
 cabal build                                     # build
 cabal repl                                      # bootstrap into REPL
