@@ -19,7 +19,7 @@ lxc config device add pab workspace disk source=$(pwd)/../ path=/home/nix/code
 lxc exec pab -- sudo --login --user nix         # start interacting with the container as the nix user
 cd ~/pab                                        # enter the PAB repo
 nix-shell                                       # bootstrap the nix-shell
-cd ~/code/plutus-pioneer-program/code/week03/   # go to the lesson
+cd ~/code/plutus-pioneer-program/code/week03/   # go to the >
 cabal update                                    # update cabal
 cabal build                                     # build
 cabal repl                                      # bootstrap into REPL
