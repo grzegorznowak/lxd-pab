@@ -99,3 +99,68 @@
 
   roles:
     - ableton.nix
+
+
+- name: Converge cardano-node
+  hosts: all
+  vars:
+    cardano_user: nix
+    cardano_group: cardano
+    cardano_install_method: dist
+    cardano_home_directory: "/home/{{ cardano_user }}"
+    cardano_wallets:
+      - &pab_wallet pab
+  roles:
+    - grzegorznowak.cardano_node
+
+  post_tasks:
+
+    - set_fact:
+        wallet_to_check: *pab_wallet
+        lovelace_needed: 100000000  # 100 ADA
+
+    - name: Wait until cardano node is fully synced against the testnet
+      assert_cardano_synced:
+        cardano_node_socket: "{{ cardano_node_socket }}"
+        cardano_bin_path: "{{ cardano_bin_path }}"
+        active_network: "{{ active_network }}"
+        testnet_magic: "{{ network_magic }}"  # only used on testnet
+      retries: 60  # wait up to 4h for full sync
+      delay: 240
+      become: true
+      become_user: "{{ cardano_user }}"
+      register: sync_check_result
+      until: sync_check_result.progress | int == 100
+
+    - name: Collect wallets
+      cardano_wallet:
+        cardano_bin_path: "{{ cardano_bin_path }}"
+        name: "{{ wallet_to_check }}"
+        active_network: "{{ active_network }}"
+        testnet_magic: "{{ network_magic }}"  # only used on testnet
+      become: true
+      become_user: "{{ cardano_user }}"
+      register: wallet_results
+
+    - name: Address Info
+      debug:
+        msg: "Send at least 100 ADA via a test faucet to this address: {{ wallet_results['wallets_addresses'][wallet_to_check] }}"
+      changed_when: true
+
+    - name: Make sure we have some Lovelace
+      assert_address_funded:
+        cardano_node_socket: "{{ cardano_node_socket }}"
+        cardano_bin_path: "{{ cardano_bin_path }}"
+        active_network: "{{ active_network }}"
+        testnet_magic: "{{ network_magic }}"  # only used on testnet
+        expected_lovelace: "{{ lovelace_needed }}"
+        address: "{{ wallet_results['wallets_addresses'][wallet_to_check] }}"
+      retries: 30
+      delay: 60    # wait up to 30min for tokens to arrive
+      become: true
+      become_user: "{{ cardano_user }}"
+      register: lovelace_result
+      until: lovelace_result.lovelace | int >= lovelace_needed
+  tags:
+    - never
+    - with_cardano_node

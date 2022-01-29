@@ -1,5 +1,6 @@
 # LXD Plutus Application Backend's Provisioning
 
+with cardano node 
 ## QuickStart
 
 Build source material from Plutus Pioneer Program as easily as:
@@ -11,8 +12,13 @@ git clone https://github.com/input-output-hk/plutus-pioneer-program.git
 git clone git@github.com:grzegorznowak/lxd-pab.git lxd-pab
 cd lxd-pab
 
-# build PAB against the lesson's commit:
+# build cardano-node and PAB against the lesson's commit
 PAB_COMMIT=4edc082309c882736e9dec0132a3c936fe63b4ea ./converge.sh
+
+# when prompted you can chose to install cardano node as well
+# be aware that this makes the whole process wait until the node is fully synced 
+# and test address toped up with ADA. You will be shown the test address to pay to
+# during the converge, right after the blockchain is 100% synced
 
 # map the parent folder onto the container (a default you might need to tweak):
 lxc config device add pab workspace disk source=$(pwd)/../ path=/home/nix/code
@@ -24,6 +30,9 @@ cd ~/code/plutus-pioneer-program/code/week03/   # go to the sources
 cabal update                                    # update cabal
 cabal build                                     # build
 cabal repl                                      # bootstrap into REPL
+
+# if the container was built with cardano node
+cardano-cli --help
 ```
 
 ## Requirements
