@@ -8,6 +8,11 @@ with cardano node
 
 testnet magic: `1097911063`
 
+use it for almost production-like experience
+
+(but you might want to actually bootstrap devnet, 
+see further down in the `Devnet` section)
+
 ```
 # 3rd Pioneer's cohort week 3 code given as an example
 
@@ -49,6 +54,9 @@ CARDANO_NODE_SOCKET_PATH=~/cardano_node/db/node.socket cardano-cli query utxo --
 (thanks https://github.com/woofpool)
 
 testnet magic: `42`
+
+a CONSIDERABLY lighter version of the blockchain that is local to your container,
+can be synchronized in a matter of minutes and then disposed if not needed
 
 ```
 # 3rd Pioneer's cohort week 3 code given as an example

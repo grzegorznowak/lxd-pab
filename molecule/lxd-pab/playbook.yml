@@ -163,7 +163,7 @@
       until: lovelace_result.lovelace | int >= lovelace_needed
   tags:
     - never
-    - with_cardano_tesnet
+    - with_cardano_testnet
 
 
 - name: Converge cardano-node devnet compatible
@@ -174,7 +174,7 @@
     cardano_install_method: dist
     cardano_home_directory: "/home/{{ cardano_user }}"
     cardano_wallets:
-      - &pab_wallet pab
+      - *pab_wallet
   roles:
     - grzegorznowak.cardano_node
 
