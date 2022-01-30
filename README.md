@@ -31,8 +31,9 @@ cabal update                                    # update cabal
 cabal build                                     # build
 cabal repl                                      # bootstrap into REPL
 
-# if the container was built with cardano node
-cardano-cli --help
+# FOLLOWING commands will work only with cardno node installed:
+
+cardano-cli --help  # asses it generally works
 
 # list the utxos
 CARDANO_NODE_SOCKET_PATH=~/cardano_node/db/node.socket cardano-cli query utxo --address $(cat ~/wallets/pab/payment.addr) --testnet-magic 1097911063
