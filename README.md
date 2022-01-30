@@ -1,29 +1,31 @@
 # LXD Plutus Application Backend's Provisioning
 
 with cardano node 
+
 ## QuickStart
 
-Build source material from Plutus Pioneer Program as easily as:
+### Testnet
+
+testnet magic: `1097911063`
 
 ```
 # 3rd Pioneer's cohort week 3 code given as an example
 
-git clone https://github.com/input-output-hk/plutus-pioneer-program.git 
+git clone https://github.com/input-output-hk/plutus-pioneer-program.git
 git clone git@github.com:grzegorznowak/lxd-pab.git lxd-pab
 cd lxd-pab
 
 # build cardano-node and PAB against the lesson's commit
-PAB_COMMIT=4edc082309c882736e9dec0132a3c936fe63b4ea ./converge.sh
-
-# when prompted you can chose to install cardano node as well
-# be aware that this makes the whole process wait until the node is fully synced 
-# and test address toped up with ADA. You will be shown the test address to pay to
-# during the converge, right after the blockchain is 100% synced
+PAB_COMMIT=4edc082309c882736e9dec0132a3c936fe63b4ea ./converge_testnet.sh
+# BEWARE: syncing the full testnet is a long-haul process that will take 
+# MANY HOURS to complete. Converge process will wait until it's done, 
+# so best to just let it run.
 
 # map the parent folder onto the container (a default you might need to tweak):
 lxc config device add pab workspace disk source=$(pwd)/../ path=/home/nix/code
-  
+
 lxc exec pab -- sudo --login --user nix         # start interacting with the container as the nix user
+
 cd ~/pab                                        # enter the PAB repo
 nix-shell                                       # bootstrap the nix-shell
 cd ~/code/plutus-pioneer-program/code/week03/   # go to the sources
@@ -31,12 +33,60 @@ cabal update                                    # update cabal
 cabal build                                     # build
 cabal repl                                      # bootstrap into REPL
 
-# FOLLOWING commands will work only with cardno node installed:
-
+# Confirm cardano-cli works for the nix user:
 cardano-cli --help  # asses it generally works
 
-# list the utxos
+# FOLLOWING commands will work only with cardno node fully synced:
+# list the available utxos for the primary payment address
 CARDANO_NODE_SOCKET_PATH=~/cardano_node/db/node.socket cardano-cli query utxo --address $(cat ~/wallets/pab/payment.addr) --testnet-magic 1097911063
+
+# With the testnet you start with one payment address added already, so make sure to top it up
+# using test faucet, then create additional addresses to send some ADA to using cardano-cli
+```
+
+### Local Devnet
+
+(thanks https://github.com/woofpool)
+
+testnet magic: `42`
+
+```
+# 3rd Pioneer's cohort week 3 code given as an example
+
+# devnet setup courtesy of https://github.com/woofpool/cardano-private-testnet-setup.git 
+git clone https://github.com/woofpool/cardano-private-testnet-setup.git
+git clone https://github.com/input-output-hk/plutus-pioneer-program.git
+git clone git@github.com:grzegorznowak/lxd-pab.git lxd-pab
+cd lxd-pab
+
+# build cardano-node and PAB against the lesson's commit
+PAB_COMMIT=4edc082309c882736e9dec0132a3c936fe63b4ea ./converge_devnet.sh
+
+# map the parent folder onto the container (a default you might need to tweak):
+lxc config device add pab workspace disk source=$(pwd)/../ path=/home/nix/code
+
+lxc exec pab -- sudo --login --user nix
+cd ~/code/cardano-private-testnet-setup
+./scripts/automate.sh
+# == keep this process running and use NEW TERMINAL to interact with the PAB and the dev blockchain ==
+
+# ==== New Terminal ==== 
+lxc exec pab -- sudo --login --user nix         # start interacting with the container as the nix user
+
+cd ~/pab                                        # enter the PAB repo
+nix-shell                                       # bootstrap the nix-shell
+cd ~/code/plutus-pioneer-program/code/week03/   # go to the sources
+cabal update                                    # update cabal
+cabal build                                     # build
+cabal repl                                      # bootstrap into REPL
+
+# Confirm cardano-cli works for the nix user:
+cardano-cli --help  # asses it generally works
+
+# devnet comes with a genesis utxo that you can consume  
+# for detail please refer to the original manual from woofpool:
+https://github.com/woofpool/cardano-private-testnet-setup/blob/main/5-RUN_TRANSACTION.md
+https://github.com/woofpool/cardano-private-testnet-setup/blob/main/6-RUN_PLUTUS_SCRIPT_TXS.md
 ```
 
 ## Requirements

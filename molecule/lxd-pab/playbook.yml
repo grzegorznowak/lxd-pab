@@ -101,7 +101,7 @@
     - ableton.nix
 
 
-- name: Converge cardano-node
+- name: Converge cardano-node and bootstrap testnet
   hosts: all
   vars:
     cardano_user: nix
@@ -163,4 +163,33 @@
       until: lovelace_result.lovelace | int >= lovelace_needed
   tags:
     - never
-    - with_cardano_node
+    - with_cardano_tesnet
+
+
+- name: Converge cardano-node devnet compatible
+  hosts: all
+  vars:
+    cardano_user: nix
+    cardano_group: cardano
+    cardano_install_method: dist
+    cardano_home_directory: "/home/{{ cardano_user }}"
+    cardano_wallets:
+      - &pab_wallet pab
+  roles:
+    - grzegorznowak.cardano_node
+
+  post_tasks:
+
+    - name: "Cardano Service | Start the {{ cardano_service_name }} service"
+      service:
+        name: "{{ cardano_service_name }}.service"
+        state: stopped
+
+    - name: "Cardano Service | Disable the {{ cardano_service_name }} service"
+      service:
+        name: "{{ cardano_service_name }}.service"
+        enabled: false
+
+  tags:
+    - never
+    - with_cardano_devnet

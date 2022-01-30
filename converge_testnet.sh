@@ -10,12 +10,5 @@ test provisioningenv || virtualenv provisioningenv --python=python3
 pip install -r provisioning-requirements.txt
 
 molecule converge -s lxd-pab
+molecule converge -s lxd-pab -- --tags=with_cardano_testnet
 
-while true; do
-    read -p "Do you wish to build cardano node with testnet support [yes/no] ? " yn
-    case $yn in
-        [Yy]* ) molecule converge -s lxd-pab -- --tags=with_cardano_node; break;;
-        [Nn]* ) exit;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
