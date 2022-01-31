@@ -1,6 +1,8 @@
 # LXD Plutus Application Backend's Provisioning
 
-with cardano node 
+provisions cardano with help of two external ansiblez/scripts:
+* https://github.com/grzegorznowak/cardano-node-role
+* https://github.com/woofpool/cardano-private-testnet-setup.git
 
 ## QuickStart
 
