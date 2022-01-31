@@ -20,6 +20,23 @@
         home: "/home/{{ nix_user }}"
 
   post_tasks:
+
+    - name: "Add user {{ nix_user }} to sudo"
+      lineinfile:
+        path: "/etc/sudoers.d/{{ nix_user }}"
+        line: '{{ nix_user }} ALL=(ALL) NOPASSWD: ALL'
+        state: present
+        mode: 0440
+        create: yes
+        validate: 'visudo -cf %s'
+
+    - name: Set includedir in sudoers
+      lineinfile:
+        dest: /etc/sudoers
+        line: "#includedir /etc/sudoers.d"
+        state: present
+        validate: "/usr/sbin/visudo -cf %s"
+
     - name: Update bashrc for the nix user
       lineinfile:
         dest: "/home/{{ nix_user }}/.bashrc"
@@ -101,7 +118,7 @@
     - ableton.nix
 
 
-- name: Converge cardano-node and bootstrap testnet
+- name: Converge cardano-node with testnet
   hosts: all
   vars:
     cardano_user: nix
@@ -166,29 +183,15 @@
     - with_cardano_testnet
 
 
-- name: Converge cardano-node devnet compatible
+- name: Converge cardano-node in devnet mode
   hosts: all
   vars:
     cardano_user: nix
+    active_network: dev
     cardano_group: cardano
     cardano_install_method: dist
-    cardano_home_directory: "/home/{{ cardano_user }}"
-    cardano_wallets:
-      - *pab_wallet
   roles:
     - grzegorznowak.cardano_node
-
-  post_tasks:
-
-    - name: "Cardano Service | Start the {{ cardano_service_name }} service"
-      service:
-        name: "{{ cardano_service_name }}.service"
-        state: stopped
-
-    - name: "Cardano Service | Disable the {{ cardano_service_name }} service"
-      service:
-        name: "{{ cardano_service_name }}.service"
-        enabled: false
 
   tags:
     - never

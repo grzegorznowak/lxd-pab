@@ -51,6 +51,8 @@ CARDANO_NODE_SOCKET_PATH=~/cardano_node/db/node.socket cardano-cli query utxo --
 
 ### Local Devnet
 
+#### devnet setup courtesy of https://github.com/woofpool/cardano-private-testnet-setup.git
+
 (thanks https://github.com/woofpool)
 
 testnet magic: `42`
@@ -60,9 +62,8 @@ can be synchronized in a matter of minutes and then disposed if not needed
 
 ```
 # 3rd Pioneer's cohort week 3 code given as an example
+ 
 
-# devnet setup courtesy of https://github.com/woofpool/cardano-private-testnet-setup.git 
-git clone https://github.com/woofpool/cardano-private-testnet-setup.git
 git clone https://github.com/input-output-hk/plutus-pioneer-program.git
 git clone git@github.com:grzegorznowak/lxd-pab.git lxd-pab
 cd lxd-pab
@@ -73,12 +74,6 @@ PAB_COMMIT=4edc082309c882736e9dec0132a3c936fe63b4ea ./converge_devnet.sh
 # map the parent folder onto the container (a default you might need to tweak):
 lxc config device add pab workspace disk source=$(pwd)/../ path=/home/nix/code
 
-lxc exec pab -- sudo --login --user nix
-cd ~/code/cardano-private-testnet-setup
-./scripts/automate.sh
-# == keep this process running and use NEW TERMINAL to interact with the PAB and the dev blockchain ==
-
-# ==== New Terminal ==== 
 lxc exec pab -- sudo --login --user nix         # start interacting with the container as the nix user
 
 cd ~/pab                                        # enter the PAB repo
@@ -90,6 +85,11 @@ cabal repl                                      # bootstrap into REPL
 
 # Confirm cardano-cli works for the nix user:
 cardano-cli --help  # asses it generally works
+
+# devnet's lifecycle is managed by the cardano-node service:
+sudo service cardano-node status  # show logs and the current progress of the sync
+sudo service cardano-node stop    # kill the devnet
+sudo service cardano-node start   # start the devnet in a pristine state
 
 # devnet comes with a genesis utxo that you can consume  
 # for detail please refer to the original manual from woofpool:
