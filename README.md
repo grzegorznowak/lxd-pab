@@ -1,6 +1,8 @@
 # LXD Plutus Application Backend's Provisioning
 
-with cardano node 
+provisions cardano with help of two ansiblez/scripts:
+* https://github.com/grzegorznowak/cardano-node-role
+* https://github.com/woofpool/cardano-private-testnet-setup.git
 
 ## QuickStart
 
@@ -147,7 +149,7 @@ source provisioningenv/bin/activate
 molecule destroy -s lxd-pab
 ```
 
-The follow the `Quickstart` guide a new
+Afterwards follow the `Quickstart` guide a new
 
 # Usage
 
