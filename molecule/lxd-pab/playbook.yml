@@ -132,6 +132,16 @@
 
   post_tasks:
 
+    - name: Update bashrc to export cardano socket
+      lineinfile:
+        dest: "/home/{{ cardano_user }}/.bashrc"
+        line: "export CARDANO_NODE_SOCKET_PATH=/home/{{ cardano_user }}/cardano_node/db/node.socket"
+        regexp: "^export CARDANO_NODE_SOCKET_PATH="
+        owner: "{{ cardano_user }}"
+        state: present
+        insertafter: EOF
+        create: true
+
     - set_fact:
         wallet_to_check: *pab_wallet
         lovelace_needed: 100000000  # 100 ADA
@@ -190,8 +200,35 @@
     active_network: dev
     cardano_group: cardano
     cardano_install_method: dist
+    cardano_node_socket_path: "/home/{{ cardano_user }}/cardano_devnet/private-testnet/node-bft1/node.sock"
   roles:
     - grzegorznowak.cardano_node
+
+  post_tasks:
+
+    - name: Update bashrc to export cardano socket
+      lineinfile:
+        dest: "/home/{{ cardano_user }}/.bashrc"
+        line: "export CARDANO_NODE_SOCKET_PATH={{ cardano_node_socket_path }}"
+        regexp: "^export CARDANO_NODE_SOCKET_PATH="
+        owner: "{{ cardano_user }}"
+        state: present
+        insertafter: EOF
+        create: true
+
+    - name: Ops | Create wallets we want
+      cardano_wallet:
+        cardano_bin_path: "{{ cardano_bin_path }}"
+        wallets_path: "/home/{{ cardano_user }}/cardano_devnet/private-testnet/addresses"
+        name:
+          - pab1
+          - pab2
+          - pab3
+        active_network: "dev"
+        testnet_magic: "42"  # only used on testnet
+      become: true
+      become_user: "{{ cardano_user }}"
+      register: wallet_results
 
   tags:
     - never

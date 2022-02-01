@@ -87,12 +87,15 @@ cabal repl                                      # bootstrap into REPL
 cardano-cli --help  # asses it generally works
 
 # devnet's lifecycle is managed by the cardano-node service:
-sudo service cardano-node status  # show logs and the current progress of the sync
+service cardano-node status  # show logs and the current progress of the sync
+journalctl -u cardano-node        # the same as above but more
 sudo service cardano-node stop    # kill the devnet
 sudo service cardano-node start   # start the devnet in a pristine state
 
-# devnet comes with a genesis utxo that you can consume  
-# for detail please refer to the original manual from woofpool:
+# comes with a genesis utxo that you can consume  :
+cardano-cli query utxo --address $(cat /home/nix/cardano_devnet/private-testnet/addresses/user1.addr) --testnet-magic 42
+
+# for details please refer to the original manual from woofpool:
 https://github.com/woofpool/cardano-private-testnet-setup/blob/main/5-RUN_TRANSACTION.md
 https://github.com/woofpool/cardano-private-testnet-setup/blob/main/6-RUN_PLUTUS_SCRIPT_TXS.md
 ```
