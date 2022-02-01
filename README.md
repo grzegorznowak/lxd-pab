@@ -146,7 +146,7 @@ source provisioningenv/bin/activate
 molecule destroy -s lxd-pab
 ```
 
-The follow the `Quickstart` guide a new
+Afterwards follow the `Quickstart` guide a new
 
 # Usage
 
