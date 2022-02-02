@@ -13,7 +13,7 @@ testnet magic: `1097911063`
 use it for almost production-like experience
 
 (but you might want to actually bootstrap devnet, 
-see further down in the `Devnet` section)
+see further down in the `Local Devnet` section)
 
 ```
 # 3rd Pioneer's cohort week 3 code given as an example
