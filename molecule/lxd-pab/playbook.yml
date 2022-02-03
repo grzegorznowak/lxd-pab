@@ -12,6 +12,16 @@
     default_pab_commit: 7f53f18dfc788bf6aa929f47d840efa1247e11fd
 
   pre_tasks:
+
+    - name: Python
+      apt:
+        name:
+          - python-is-python3
+        state: present
+        update-cache: true
+        install_recommends: false
+        cache_valid_time: 3600
+
     - name: "Add the {{ nix_user }} user"
       ansible.builtin.user:
         name: "{{ nix_user }}"
@@ -86,7 +96,7 @@
 
     - name: Build the PAB library
       shell: >-
-        source {{ nix_source_file }} 
+        source {{ nix_source_file }}
         && nix build -f default.nix plutus-apps.haskell.packages.plutus-pab.components.library
       become: true
       become_user: "{{ nix_user }}"
@@ -96,7 +106,7 @@
 
     - name: Build the Playground
       shell: >-
-        source {{ nix_source_file }} 
+        source {{ nix_source_file }}
         && nix-build -A plutus-playground.server
       become: true
       become_user: "{{ nix_user }}"
@@ -106,7 +116,7 @@
 
     - name: Bootstrap the nix-shell
       shell: >-
-        source {{ nix_source_file }} 
+        source {{ nix_source_file }}
         && nix-shell
       become: true
       become_user: "{{ nix_user }}"
@@ -114,7 +124,20 @@
         executable: /bin/bash
         chdir: "{{ pab_sources }}"
 
+    - name: Sync helper scripts to bin
+      copy:
+        src: ../../scripts/
+        dest: "/home/{{ nix_user }}/bin/"
+        owner: "{{ nix_user }}"
+        group: "{{ nix_user }}"
+        mode: "a+x"
+
   roles:
+    - role: geerlingguy.pip
+      pip_install_packages:
+        # Specify names and versions.
+        - name: click
+          version: "8.0.3"
     - ableton.nix
 
 
@@ -219,7 +242,7 @@
     - name: Ops | Create wallets we want
       cardano_wallet:
         cardano_bin_path: "{{ cardano_bin_path }}"
-        wallets_path: "/home/{{ cardano_user }}/cardano_devnet/private-testnet/addresses"
+        wallets_path: "/home/{{ cardano_user }}/addresses"
         name:
           - pab1
           - pab2

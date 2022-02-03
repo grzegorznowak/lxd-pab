@@ -6,51 +6,6 @@ provisions cardano with help of two ansiblez/scripts:
 
 ## QuickStart
 
-### Testnet
-
-testnet magic: `1097911063`
-
-use it for almost production-like experience
-
-(but you might want to actually bootstrap devnet, 
-see further down in the `Devnet` section)
-
-```
-# 3rd Pioneer's cohort week 3 code given as an example
-
-git clone https://github.com/input-output-hk/plutus-pioneer-program.git
-git clone git@github.com:grzegorznowak/lxd-pab.git lxd-pab
-cd lxd-pab
-
-# build cardano-node and PAB against the lesson's commit
-PAB_COMMIT=4edc082309c882736e9dec0132a3c936fe63b4ea ./converge_testnet.sh
-# BEWARE: syncing the full testnet is a long-haul process that will take 
-# MANY HOURS to complete. Converge process will wait until it's done, 
-# so best to just let it run.
-
-# map the parent folder onto the container (a default you might need to tweak):
-lxc config device add pab workspace disk source=$(pwd)/../ path=/home/nix/code
-
-lxc exec pab -- sudo --login --user nix         # start interacting with the container as the nix user
-
-cd ~/pab                                        # enter the PAB repo
-nix-shell                                       # bootstrap the nix-shell
-cd ~/code/plutus-pioneer-program/code/week03/   # go to the sources
-cabal update                                    # update cabal
-cabal build                                     # build
-cabal repl                                      # bootstrap into REPL
-
-# Confirm cardano-cli works for the nix user:
-cardano-cli --help  # asses it generally works
-
-# FOLLOWING commands will work only with cardno node fully synced:
-# list the available utxos for the primary payment address
-CARDANO_NODE_SOCKET_PATH=~/cardano_node/db/node.socket cardano-cli query utxo --address $(cat ~/wallets/pab/payment.addr) --testnet-magic 1097911063
-
-# With the testnet you start with one payment address added already, so make sure to top it up
-# using test faucet, then create additional addresses to send some ADA to using cardano-cli
-```
-
 ### Local Devnet
 
 #### devnet setup courtesy of https://github.com/woofpool/cardano-private-testnet-setup.git
@@ -97,9 +52,66 @@ sudo service cardano-node start   # start the devnet in a pristine state
 # comes with a genesis utxo that you can consume  :
 cardano-cli query utxo --address $(cat /home/nix/cardano_devnet/private-testnet/addresses/user1.addr) --testnet-magic 42
 
+# as well as with some payment addresses to send the genesis utxo to for further development:
+ls ~/addresses 
+
+# and helper script to get you started with sending lovelace across dev network's addresses
+# ie (send some ada from user1 address to pab1 address):
+send $(cat /home/nix/cardano_devnet/private-testnet/addresses/user1.addr) \
+/home/nix/cardano_devnet/private-testnet/addresses/user1.skey \
+$(cat ~/addresses/pab1/payment.addr) 60000000
+cardano-cli query utxo --address $(cat /home/nix/cardano_devnet/private-testnet/addresses/user1.addr) --testnet-magic 42
+cardano-cli query utxo --address $(cat ~/addresses/pab1/payment.addr) --testnet-magic 42
+
+
 # for details please refer to the original manual from woofpool:
 https://github.com/woofpool/cardano-private-testnet-setup/blob/main/5-RUN_TRANSACTION.md
 https://github.com/woofpool/cardano-private-testnet-setup/blob/main/6-RUN_PLUTUS_SCRIPT_TXS.md
+
+```
+
+
+### Testnet
+
+testnet magic: `1097911063`
+
+use it for almost production-like experience
+
+
+```
+# 3rd Pioneer's cohort week 3 code given as an example
+
+git clone https://github.com/input-output-hk/plutus-pioneer-program.git
+git clone git@github.com:grzegorznowak/lxd-pab.git lxd-pab
+cd lxd-pab
+
+# build cardano-node and PAB against the lesson's commit
+PAB_COMMIT=4edc082309c882736e9dec0132a3c936fe63b4ea ./converge_testnet.sh
+# BEWARE: syncing the full testnet is a long-haul process that will take 
+# MANY HOURS to complete. Converge process will wait until it's done, 
+# so best to just let it run.
+
+# map the parent folder onto the container (a default you might need to tweak):
+lxc config device add pab workspace disk source=$(pwd)/../ path=/home/nix/code
+
+lxc exec pab -- sudo --login --user nix         # start interacting with the container as the nix user
+
+cd ~/pab                                        # enter the PAB repo
+nix-shell                                       # bootstrap the nix-shell
+cd ~/code/plutus-pioneer-program/code/week03/   # go to the sources
+cabal update                                    # update cabal
+cabal build                                     # build
+cabal repl                                      # bootstrap into REPL
+
+# Confirm cardano-cli works for the nix user:
+cardano-cli --help  # asses it generally works
+
+# FOLLOWING commands will work only with cardno node fully synced:
+# list the available utxos for the primary payment address
+CARDANO_NODE_SOCKET_PATH=~/cardano_node/db/node.socket cardano-cli query utxo --address $(cat ~/wallets/pab/payment.addr) --testnet-magic 1097911063
+
+# With the testnet you start with one payment address added already, so make sure to top it up
+# using test faucet, then create additional addresses to send some ADA to using cardano-cli
 ```
 
 ## Requirements

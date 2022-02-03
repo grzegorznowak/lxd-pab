@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import argparse
+
+
+def create_utxo_struct(raw_utxo_table, token):
+    rows_tokens = [{'tx': "#".join(row.split()[0:2]),
+                    'tokens': dict(zip(row.split()[3:][0::3], row.split()[2:][0::3]))}
+                   for row
+                   in raw_utxo_table.strip().splitlines()[2:]
+                   if token in row.split()[3:][0::3]]
+    rows_by_tx = {"#".join(row.split()[0:2]): {'tx': "#".join(row.split()[0:2]),
+                                               'tokens': dict(zip(row.split()[3:][0::3], row.split()[2:][0::3]))}
+                  for row
+                  in raw_utxo_table.strip().splitlines()[2:]
+                  if token in row.split()[3:][0::3]}
+    return sorted(rows_tokens, key=lambda x: int(x['tokens'][token]), reverse=True), rows_by_tx
+
+def tx_in(raw_utxo_table, token, wanted_amount, max_tx):
+    sorted_token_txs, rows_by_tx = create_utxo_struct(raw_utxo_table, token)
+
+    accumulated_amount = 0
+    accumulated_lovelace = 0
+    txs = []
+    for row in sorted_token_txs:
+        if (accumulated_amount < wanted_amount or wanted_amount == 0) \
+                and (len(txs) < max_tx or not max_tx):
+
+            accumulated_amount += int(row['tokens'][token])
+            accumulated_lovelace += int(row['tokens']['lovelace'])  # some lovelace will always be there
+            txs.append(row['tx'])
+        else:
+            break
+
+    if accumulated_amount < wanted_amount:
+        return [], accumulated_amount, accumulated_lovelace
+
+    return txs, accumulated_amount, accumulated_lovelace
+
+def tx_out(raw_utxo_table, custom_token, token_new_amount, txs_in):
+
+    # not very elegant, but let's just dumbly skip lovelace to solve an immediate problem
+    skip_token = 'lovelace'
+
+    sorted_token_txs, rows_by_tx = create_utxo_struct(raw_utxo_table, custom_token)
+
+    tx_out = {}
+    for row in txs_in:
+        tokens = rows_by_tx[row]['tokens']
+        for token in tokens:
+            if token != skip_token:
+                if not token in tx_out:
+                    tx_out[token] = 0
+                tx_out[token] += int(tokens[token])
+
+    # set the correct amount for the selected token
+    if custom_token != skip_token:
+        tx_out[custom_token] = token_new_amount
+
+    return tx_out
+
+def format_cli_in(txs):
+    return " ".join(["--tx-in {}".format(tx) for tx in txs])
+
+def format_cli_out(txs_out):
+    return " + ".join(["{} {}".format(txs_out[tx], tx)
+                       for tx in txs_out])
+    #      if txs_out[tx] > 0])
+
+
+def build_raw_cmd(txs_in, address_change, address_to, amount_send, current_slot, tx_file):
+    valid_period = 10000
+    txs_in_formatted = format_cli_in(txs_in)
+    template =  """cardano-cli transaction build \
+--alonzo-era \
+{tx_in_cmd} \
+--testnet-magic 42 \
+--change-address {address_change} \
+--tx-out {address_to}+{amount_send} \
+--invalid-hereafter {valid_until} \
+--out-file {tx_file}"""
+    return template.format(address_change=address_change,
+                           amount_send=amount_send,
+                           address_to=address_to,
+                           tx_in_cmd=txs_in_formatted,
+                           valid_until=current_slot+valid_period,
+                           tx_file=tx_file)
+
+def build_protocol_cmd(out_file):
+    return """cardano-cli \
+query protocol-parameters --testnet-magic 42 \
+--out-file {out_file}""".format(out_file=out_file)
+
+def build_fee_cmd(raw_tx_file, tx_in_count, protocol_file):
+   return """cardano-cli \
+transaction calculate-min-fee --tx-body-file {raw_tx_file} \
+--tx-in-count {tx_in_count} \
+--tx-out-count 1 --witness-count 2 \
+--testnet-magic 42 \
+--protocol-params-file {protocol_file} | cut -d " " -f1""".format(raw_tx_file=raw_tx_file,
+                           tx_in_count=tx_in_count,
+                           protocol_file=protocol_file)
+
+def build_sign_cmd(tx_file, skey, out_file):
+    return """cardano-cli transaction sign \
+--tx-body-file {tx_file} \
+--signing-key-file {skey} \
+--testnet-magic 42 \
+--out-file {out_file}""".format(tx_file=tx_file, skey=skey, out_file=out_file)
+
+def build_utxo_table_cmd(address):
+    return """
+cardano-cli query utxo \
+--address {address} \
+--testnet-magic 42""".format(address=address)
+
+def build_submit_cmd(tx_file):
+    return "cardano-cli transaction submit --tx-file {tx_file} --testnet-magic 42".format(tx_file=tx_file)
+
+
+parser = argparse.ArgumentParser(description='utxo helper')
+
+parser.add_argument('addr_from',
+                    help='Address to source utxos from')
+parser.add_argument('addr_from_skey',
+                    help='Signing key (skey) file path')
+parser.add_argument('addr_to',
+                    help='Address to send funds to')
+parser.add_argument('amount', type=int,
+                    help='Amount to send')
+args = parser.parse_args()
+
+def main():
+    address_from = args.addr_from
+    skey = args.addr_from_skey
+    amount_send = int(args.amount)
+    address_to = args.addr_to
+    
+    max_tx_count = 4
+    dummy_fee = 1000000
+    token="lovelace"
+    current_slot_result = os.popen("cardano-cli query tip --testnet-magic 42 | jq -r '.slot'", 'r')
+    with current_slot_result:
+        current_slot = int(current_slot_result.read())
+        print(current_slot)
+
+        # collect all utxos to have at least the amount of tokens we need to spend
+        utxo_table_result = os.popen(build_utxo_table_cmd(address_from))
+        with utxo_table_result:
+            utxo_table = utxo_table_result.read()
+            txs_in, txs_amount, lovelace_available = tx_in(utxo_table, token, amount_send, max_tx_count)
+
+            print("utxos that are going to be spent with this transaction: ", format_cli_in(txs_in))
+
+            cmds = [build_raw_cmd(txs_in, address_from, address_to,
+                                  amount_send, current_slot, tx_file="/tmp/tx.tmp"),
+                    build_sign_cmd(tx_file="/tmp/tx.tmp", skey=skey, out_file="/tmp/tx.signed"),
+                    build_submit_cmd(tx_file="/tmp/tx.signed")
+                    ]
+
+            [print(cmd) for cmd in cmds]
+            results = ([os.popen(cmd).read() for cmd in cmds])
+            print(results)
+
+if __name__ == '__main__':
+    main()
