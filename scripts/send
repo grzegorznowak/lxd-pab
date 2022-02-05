@@ -88,6 +88,12 @@ def build_raw_cmd(txs_in, address_change, address_to, amount_send, current_slot,
                            valid_until=current_slot+valid_period,
                            tx_file=tx_file)
 
+def build_protocol_cmd(out_file):
+    return """cardano-cli \
+query protocol-parameters --testnet-magic 42 \
+--out-file {out_file}""".format(out_file=out_file)
+
+
 def build_sign_cmd(tx_file, skey, out_file):
     return """cardano-cli transaction sign \
 --tx-body-file {tx_file} \
