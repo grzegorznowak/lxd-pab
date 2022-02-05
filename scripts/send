@@ -122,7 +122,7 @@ def main():
     skey = args.addr_from_skey
     amount_send = int(args.amount)
     address_to = args.addr_to
-    env_dry_mode = os.getenv('CARDANO_DRY_MODE').lower() in ['true', '1']
+    env_dry_mode = os.getenv('CARDANO_DRY_MODE', default='0').lower() in ['true', '1']
     
     max_tx_count = 4
     dummy_fee = 1000000
