@@ -46,6 +46,7 @@ cardano-cli --help  # asses it generally works
 # devnet's lifecycle is managed by the cardano-node service:
 service cardano-node status  # show logs and the current progress of the sync
 journalctl -u cardano-node        # the same as above but more
+tail -f -n50 /home/nix/cardano_devnet/logs/privatenet.log  # even more things debug :) 
 sudo service cardano-node stop    # kill the devnet
 sudo service cardano-node start   # start the devnet in a pristine state
 
