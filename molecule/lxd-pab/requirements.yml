@@ -1,7 +1,9 @@
 ---
 
-- name: ableton.nix
-  version: 0.0.1
+- src: https://github.com/grzegorznowak/ansible-role-nix.git
+  name: nix
+  scm: git
+  version: patch-1
 
 - name: geerlingguy.pip
   version: 2.1.0
