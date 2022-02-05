@@ -63,11 +63,15 @@ $(cat ~/addresses/pab1/payment.addr) 60000000
 cardano-cli query utxo --address $(cat /home/nix/cardano_devnet/private-testnet/addresses/user1.addr) --testnet-magic 42
 cardano-cli query utxo --address $(cat ~/addresses/pab1/payment.addr) --testnet-magic 42
 
-
 # for details please refer to the original manual from woofpool:
 https://github.com/woofpool/cardano-private-testnet-setup/blob/main/5-RUN_TRANSACTION.md
 https://github.com/woofpool/cardano-private-testnet-setup/blob/main/6-RUN_PLUTUS_SCRIPT_TXS.md
 
+# running send in DRY_MODE to just calculating intput utxos and sign commands for manual tweaks,
+# like adjusting for plutus contract etc.
+CARDANO_DRY_MODE=1 send $(cat /home/nix/cardano_devnet/private-testnet/addresses/user1.addr) \
+/home/nix/cardano_devnet/private-testnet/addresses/user1.skey \
+$(cat ~/addresses/pab1/payment.addr) 60000000
 ```
 
 

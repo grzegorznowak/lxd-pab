@@ -88,21 +88,6 @@ def build_raw_cmd(txs_in, address_change, address_to, amount_send, current_slot,
                            valid_until=current_slot+valid_period,
                            tx_file=tx_file)
 
-def build_protocol_cmd(out_file):
-    return """cardano-cli \
-query protocol-parameters --testnet-magic 42 \
---out-file {out_file}""".format(out_file=out_file)
-
-def build_fee_cmd(raw_tx_file, tx_in_count, protocol_file):
-   return """cardano-cli \
-transaction calculate-min-fee --tx-body-file {raw_tx_file} \
---tx-in-count {tx_in_count} \
---tx-out-count 1 --witness-count 2 \
---testnet-magic 42 \
---protocol-params-file {protocol_file} | cut -d " " -f1""".format(raw_tx_file=raw_tx_file,
-                           tx_in_count=tx_in_count,
-                           protocol_file=protocol_file)
-
 def build_sign_cmd(tx_file, skey, out_file):
     return """cardano-cli transaction sign \
 --tx-body-file {tx_file} \
@@ -137,6 +122,7 @@ def main():
     skey = args.addr_from_skey
     amount_send = int(args.amount)
     address_to = args.addr_to
+    env_dry_mode = os.getenv('CARDANO_DRY_MODE').lower() in ['true', '1']
     
     max_tx_count = 4
     dummy_fee = 1000000
@@ -161,8 +147,11 @@ def main():
                     ]
 
             [print(cmd) for cmd in cmds]
-            results = ([os.popen(cmd).read() for cmd in cmds])
-            print(results)
+            # skip state changing ops in the dry mode
+
+            if not env_dry_mode:
+                results = ([os.popen(cmd).read() for cmd in cmds])
+                print(results)
 
 if __name__ == '__main__':
     main()
