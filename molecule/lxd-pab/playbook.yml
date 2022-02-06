@@ -224,6 +224,8 @@
     cardano_group: cardano
     cardano_install_method: dist
     cardano_node_socket_path: "/home/{{ cardano_user }}/cardano_devnet/private-testnet/node-bft1/node.sock"
+    cardano_devnet_script_version: feature/fast-alonzo
+    cardano_devnet_repo: https://github.com/grzegorznowak/cardano-private-testnet-setup.git
   roles:
     - grzegorznowak.cardano_node
 
