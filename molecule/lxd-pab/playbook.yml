@@ -150,6 +150,9 @@
     cardano_home_directory: "/home/{{ cardano_user }}"
     cardano_wallets:
       - &pab_wallet pab
+    cardano_hydra_build: 9941151
+    cardano_node_version: 1.33.0
+    cardano_dist_sha_256: eb7fbc652f79bcb8f56699ed7fee174a4ed321307c7086838d44972136795543
   roles:
     - grzegorznowak.cardano_node
 
@@ -226,6 +229,10 @@
     cardano_node_socket_path: "/home/{{ cardano_user }}/cardano_devnet/private-testnet/node-bft1/node.sock"
     cardano_devnet_script_version: feature/fast-alonzo
     cardano_devnet_repo: https://github.com/grzegorznowak/cardano-private-testnet-setup.git
+    cardano_hydra_build: 9941151
+    cardano_node_version: 1.33.0
+    cardano_dist_sha_256: eb7fbc652f79bcb8f56699ed7fee174a4ed321307c7086838d44972136795543
+
   roles:
     - grzegorznowak.cardano_node
 
