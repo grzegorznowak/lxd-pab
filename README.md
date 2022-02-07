@@ -11,7 +11,7 @@ provisions cardano with help of two ansiblez/scripts:
 testnet magic: `42`
 
 a CONSIDERABLY lighter version of the blockchain that is local to your container,
-can be synchronized in a matter of minutes and then disposed if not needed
+gets bootstraped in <2min and comes with a funded address
 
 ```
 # 3rd Pioneer's cohort week 3 code given as an example
