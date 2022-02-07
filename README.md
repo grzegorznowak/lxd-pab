@@ -8,10 +8,6 @@ provisions cardano with help of two ansiblez/scripts:
 
 ### Local Devnet
 
-#### devnet setup courtesy of https://github.com/woofpool/cardano-private-testnet-setup.git
-
-(thanks https://github.com/woofpool)
-
 testnet magic: `42`
 
 a CONSIDERABLY lighter version of the blockchain that is local to your container,
