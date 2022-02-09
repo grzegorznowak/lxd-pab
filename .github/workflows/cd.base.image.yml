@@ -1,0 +1,25 @@
+---
+
+name: CD | Build Base Image for Bender
+
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  # do not trigger for documentation changes
+  push:
+    branches: [ main ]
+    paths:
+      - 'images/base/**'
+
+jobs:
+  lint:
+
+    runs-on: ubuntu-21.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: install buildah dependencies
+        run: |
+          apt install -y buildah
+      - name: build the base image
+        run: |
+          buildah build -t bender-base images/denber-base
