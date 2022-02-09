@@ -13,12 +13,17 @@ on:
 jobs:
   lint:
 
-    runs-on: ubuntu-21.04
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v2
       - name: install buildah dependencies
         run: |
+          sh -c "echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/x${ID^}_${VERSION_ID}/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list"
+          wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/x${ID^}_${VERSION_ID}/Release.key -O Release.key
+          apt-key add - < Release.key
+          apt-get update -qq
+          apt-get -qq -y install buildah
           apt install -y buildah
       - name: build the base image
         run: |
