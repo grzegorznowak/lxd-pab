@@ -31,3 +31,4 @@ jobs:
       - name: build the base image
         run: |
           buildah build-using-dockerfile -t bender-base images/bender-base
+          buildah push ghcr.io/OWNER/bender-base:latest
