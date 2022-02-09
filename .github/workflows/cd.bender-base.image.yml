@@ -27,4 +27,4 @@ jobs:
           sudo apt-get -qq -y install buildah
       - name: build the base image
         run: |
-          buildah build -t bender-base images/denber-base
+          buildah build-using-dockerfile -t bender-base images/denber-base
