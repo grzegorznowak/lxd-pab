@@ -1,0 +1,11 @@
+---
+
+- name: geerlingguy.pip
+  version: 2.1.0
+
+- src: https://github.com/grzegorznowak/cardano-node-role.git
+  name: grzegorznowak.cardano_node
+  scm: git
+  version: main
+
+  

@@ -1,0 +1,25 @@
+---
+
+### CORE PROVISIONING ###
+- name: Converge common for all
+  hosts: all
+  vars:
+    cardano_user: root
+    active_network: dev
+    cardano_group: root
+    cardano_install_method: dist
+    cardano_node_with_libsodium: false
+    cardano_node_as_service: false
+    # repo with the juicy devnet scripts
+    cardano_home_directory: /root
+
+    ansible_bender:
+      base_image: "localhost/bender_base"
+
+      target_image:
+        name: cardano-node-base
+        labels:
+          os: focal
+
+  roles:
+    - grzegorznowak.cardano_node
