@@ -7,8 +7,8 @@ on:
   # do not trigger for documentation changes
   push:
     branches: [ main ]
-    paths:
-      - 'images/bender-base/**'
+#    paths:
+#      - 'images/bender-base/**'
 
 jobs:
   lint:
