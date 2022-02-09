@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: authenticate with the ghcr.io container registry
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u USERNAME --password-stdin
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u grzegorznowak --password-stdin
       - name: install buildah dependencies
         run: |
           . /etc/os-release
@@ -31,4 +31,4 @@ jobs:
       - name: build the base image
         run: |
           buildah build-using-dockerfile -t bender-base images/bender-base
-          buildah push ghcr.io/OWNER/bender-base:latest
+          buildah push ghcr.io/grzegorznowak/bender-base:latest
