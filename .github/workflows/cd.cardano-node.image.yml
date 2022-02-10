@@ -44,7 +44,7 @@ jobs:
       - name: install ansible-bender and ansible deps
         run: |
           pip install -r images/${IMAGE_NAME}/requirements.txt
-          ansible-galaxy install -r images/${IMAGE_NAME}/requirements.yml
+          ansible-galaxy install --force -r images/${IMAGE_NAME}/requirements.yml
           ansible --version
 
       - name: build the image
