@@ -3,12 +3,10 @@
 name: CD | Build Base Image for Bender
 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  # do not trigger for documentation changes
   push:
     branches: [ main ]
-#    paths:
-#      - 'images/bender-base/**'
+    paths:
+      - 'images/bender-base/**'
 
 jobs:
   build:
@@ -28,7 +26,11 @@ jobs:
           sudo apt-key add - < Release.key
           sudo apt-get update -qq
           sudo apt-get -qq -y install buildah
-      - name: build the base image
+
+      - name: build the image
         run: |
           buildah build-using-dockerfile --tag ghcr.io/grzegorznowak/bender-base:latest images/bender-base
+
+      - name: publish the image
+        run: |
           buildah push ghcr.io/grzegorznowak/bender-base:latest

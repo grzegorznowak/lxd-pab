@@ -5,21 +5,25 @@
   hosts: all
   vars:
     cardano_user: root
-    active_network: dev
     cardano_group: root
     cardano_install_method: dist
     cardano_node_with_libsodium: false
     cardano_node_as_service: false
     # repo with the juicy devnet scripts
     cardano_home_directory: /root
+    cardano_node_version: 1.33.0
+    cardano_hydra_build: 9941151
+    cardano_dist_sha_256: eb7fbc652f79bcb8f56699ed7fee174a4ed321307c7086838d44972136795543
 
     ansible_bender:
-      base_image: "localhost/bender_base"
+      base_image: "ghcr.io/grzegorznowak/bender-base:latest"
 
       target_image:
-        name: cardano-node-base
+        name: "ghcr.io/grzegorznowak/bender-base:{{ cardano_node_version }}"
         labels:
-          os: focal
+          os: ubuntu
+          distro: focal
+          cardano_version: "{{ cardano_node_version }}"
 
   roles:
     - grzegorznowak.cardano_node

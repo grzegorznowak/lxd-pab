@@ -1,0 +1,52 @@
+---
+
+name: CD | Build Cardano Node Image
+
+on:
+  push:
+    branches: [ main ]
+#    paths:
+#      - 'images/bender-base/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        cardano-node-version: [ 1.33.0 ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: authenticate with the ghcr.io container registry
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u grzegorznowak --password-stdin
+
+      - name: install buildah
+        run: |
+          . /etc/os-release
+          sudo sh -c "echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/x${ID^}_${VERSION_ID}/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list"
+          wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/x${ID^}_${VERSION_ID}/Release.key -O Release.key
+          sudo apt-key add - < Release.key
+          sudo apt-get update -qq
+          sudo apt-get -qq -y install buildah
+
+      - name: install podman
+        run: |
+          . /etc/os-release
+          echo "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /" | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
+          curl -L "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/Release.key" | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get -y upgrade
+          sudo apt-get -y install podman
+
+      - name: install ansible-bender and ansible deps
+        run: |
+          pip install -r images/cardano-node/requirements.txt
+          ansible-galaxy install -r images/cardano-node/requirements.yml
+
+      - name: build the image
+        run: |
+          ansible-bender build images/cardano-node/playbook-${{ matrix.cardano-node-version }}.yml --tag ghcr.io/grzegorznowak/bender-base:latest images/bender-base
+
+      - name: publish the image
+        run: |
+          buildah push ghcr.io/grzegorznowak/bender-base:${{ matrix.cardano-node-version }}
