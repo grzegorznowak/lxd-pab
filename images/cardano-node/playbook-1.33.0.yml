@@ -17,7 +17,9 @@
 
     ansible_bender:
       base_image: "ghcr.io/grzegorznowak/bender-base:latest"
-
+      squash: true
+      layering: false
+      cache_tasks: false
       target_image:
         name: "cardano-node"
         labels:
