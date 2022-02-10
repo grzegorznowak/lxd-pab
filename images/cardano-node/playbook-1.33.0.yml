@@ -26,7 +26,7 @@
           cardano_version: "{{ cardano_node_version }}"
   post_tasks:
     - debug:
-        mas: test
+        msg: test
 #
 #  roles:
 #    - grzegorznowak.cardano_node
