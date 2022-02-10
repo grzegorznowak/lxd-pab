@@ -19,6 +19,8 @@ jobs:
         cardano-node-version: [ 1.33.0 ]
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
 
       - name: free up space on the build server
         run: |
