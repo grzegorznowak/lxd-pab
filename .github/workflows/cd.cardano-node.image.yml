@@ -45,6 +45,7 @@ jobs:
         run: |
           pip install -r images/${IMAGE_NAME}/requirements.txt
           ansible-galaxy install -r images/${IMAGE_NAME}/requirements.yml
+          ansible --version
 
       - name: build the image
         run: |
