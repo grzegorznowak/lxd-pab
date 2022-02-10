@@ -45,8 +45,9 @@ jobs:
 
       - name: build the image
         run: |
-          ansible-bender build images/cardano-node/playbook-${{ matrix.cardano-node-version }}.yml --tag ghcr.io/grzegorznowak/bender-base:latest images/bender-base
+          ansible-bender build images/cardano-node/playbook-${{ matrix.cardano-node-version }}.yml
 
       - name: publish the image
         run: |
-          buildah push ghcr.io/grzegorznowak/bender-base:${{ matrix.cardano-node-version }}
+          buildah tag localhost/cardano-node ghcr.io/grzegorznowak/bender-base:test
+          buildah push ghcr.io/grzegorznowak/bender-base:test

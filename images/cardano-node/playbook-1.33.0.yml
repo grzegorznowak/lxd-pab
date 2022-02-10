@@ -19,11 +19,14 @@
       base_image: "ghcr.io/grzegorznowak/bender-base:latest"
 
       target_image:
-        name: "ghcr.io/grzegorznowak/bender-base:{{ cardano_node_version }}"
+        name: "cardano-node"
         labels:
           os: ubuntu
           distro: focal
           cardano_version: "{{ cardano_node_version }}"
-
-  roles:
-    - grzegorznowak.cardano_node
+  post_tasks:
+    - debug:
+        mas: test
+#
+#  roles:
+#    - grzegorznowak.cardano_node
