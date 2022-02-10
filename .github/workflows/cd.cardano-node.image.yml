@@ -19,6 +19,11 @@ jobs:
         cardano-node-version: [ 1.33.0 ]
     steps:
       - uses: actions/checkout@v2
+
+      - name: free up space on the build server
+        run: |
+          ./.github/scripts/free_space.sh
+
       - name: authenticate with the ghcr.io container registry
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u grzegorznowak --password-stdin
