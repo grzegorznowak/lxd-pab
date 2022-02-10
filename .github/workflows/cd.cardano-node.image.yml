@@ -8,6 +8,9 @@ on:
 #    paths:
 #      - 'images/bender-base/**'
 
+env:
+  IMAGE_NAME: cardano-node
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -40,14 +43,14 @@ jobs:
 
       - name: install ansible-bender and ansible deps
         run: |
-          pip install -r images/cardano-node/requirements.txt
-          ansible-galaxy install -r images/cardano-node/requirements.yml
+          pip install -r images/${IMAGE_NAME}/requirements.txt
+          ansible-galaxy install -r images/${IMAGE_NAME}/requirements.yml
 
       - name: build the image
         run: |
-          ansible-bender build images/cardano-node/playbook-${{ matrix.cardano-node-version }}.yml
+          ansible-bender build images/${IMAGE_NAME}/playbook-${{ matrix.cardano-node-version }}.yml
 
       - name: publish the image
         run: |
-          buildah tag localhost/cardano-node ghcr.io/grzegorznowak/bender-base:test
-          buildah push ghcr.io/grzegorznowak/bender-base:test
+          buildah tag localhost/${IMAGE_NAME} ghcr.io/grzegorznowak/${IMAGE_NAME}:${{ matrix.cardano-node-version }}
+          buildah push ghcr.io/grzegorznowak/${IMAGE_NAME}:${{ matrix.cardano-node-version }}

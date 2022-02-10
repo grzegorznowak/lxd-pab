@@ -24,9 +24,6 @@
           os: ubuntu
           distro: focal
           cardano_version: "{{ cardano_node_version }}"
-  post_tasks:
-    - debug:
-        msg: test
-#
-#  roles:
-#    - grzegorznowak.cardano_node
+
+  roles:
+    - grzegorznowak.cardano_node
